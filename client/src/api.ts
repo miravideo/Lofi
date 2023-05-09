@@ -1,6 +1,6 @@
 import { OutputParams } from './params';
 
-const server = 'https://lofiserver.jacobzhang.de';
+const server = 'http://localhost:5173';
 
 export const generate = (): Promise<OutputParams> =>
   fetch(`${server}/generate`)
