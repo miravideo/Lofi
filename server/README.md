@@ -6,3 +6,4 @@ This is a simple [Flask](https://palletsprojects.com/p/flask/) server which offe
 * `/predict`: This endpoint takes a string as parameter `input` and delivers a lo-fi track by running the input through Lyrics2Lofi.
 
 You need to save the two checkpoints in `checkpoints/lofi2lofi_decoder.pth` and `checkpoints/lyrics2lofi.pth` respectively.
+

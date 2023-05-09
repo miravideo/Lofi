@@ -2,21 +2,14 @@ import json
 
 import torch
 from flask import Flask, request, jsonify
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
 
 from model.lofi2lofi_model import Decoder as Lofi2LofiDecoder
 from model.lyrics2lofi_model import Lyrics2LofiModel
-from server.lofi2lofi_generate import decode
-from server.lyrics2lofi_predict import predict
+from lofi2lofi_generate import decode
+from lyrics2lofi_predict import predict
 
 device = "cpu"
 app = Flask(__name__)
-limiter = Limiter(
-    app,
-    key_func=get_remote_address,
-    default_limits=["30 per minute"]
-)
 
 lofi2lofi_checkpoint = "checkpoints/lofi2lofi_decoder.pth"
 print("Loading lofi model...", end=" ")
@@ -59,3 +52,7 @@ def lyrics_to_track():
     response.headers.add('Access-Control-Allow-Origin', '*')
 
     return response
+
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5173)

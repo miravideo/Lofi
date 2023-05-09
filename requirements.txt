@@ -1,0 +1,5 @@
+flask
+Flask-Limiter
+numpy
+transformers
+jsonpickle

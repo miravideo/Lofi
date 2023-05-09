@@ -52,7 +52,7 @@ If you want to deploy your own model, you can either train your own model (see t
 By default, this uses the project's server as the backend. You can also train your own model and deploy your own server.
 
 ### Train your own model
-See the [model](model) folder for details. Once you have trained your model, put the checkpoint in the `checkpoints` folder.
+See the [model](server/model) folder for details. Once you have trained your model, put the checkpoint in the `checkpoints` folder.
 
 ### Deploy your own server
 See the [server](server) folder for details. You can use the provided Dockerfile. Don't forget to change the API url in the client.
