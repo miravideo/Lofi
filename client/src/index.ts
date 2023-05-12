@@ -1,9 +1,11 @@
 import Sortable from 'sortablejs';
+import * as Samples from './samples';
 import Player, { RepeatMode } from './player';
 import Producer from './producer';
 import { DEFAULT_OUTPUTPARAMS, HIDDEN_SIZE, OutputParams } from './params';
 import { decompress, randn } from './helper';
-import { decode } from './api';
+import { decode, server } from './api';
+import { Track } from './track';
 
 const player = new Player();
 
@@ -116,11 +118,47 @@ export async function generateNewTrack() {
   const producer = new Producer();
   const track = producer.produce(params);
   player.addToPlaylist(track);
+  downloadTrack(track);
+
   // scroll to end of playlist
   playlistContainer.scrollTop = playlistContainer.scrollHeight;
 
   generateButton.disabled = false;
   loadingAnimation.style.display = 'none';
+}
+
+function downloadTrack(track: Track) {
+  const jdata = {
+    header: {
+      tempos: [ { bpm: track.bpm }]
+    },
+    tracks: [{
+      notes: track.instrumentNotes
+    }],
+    samples: [
+      ...track.sampleLoops.map(sp => {
+        return { 
+          name: `${sp.sampleGroupName}-${sp.sampleIndex}`,
+          start: sp.startTime,
+          stop: sp.stopTime,
+          url: Samples.SAMPLEGROUPS.get(sp.sampleGroupName)
+            .getSampleUrl(sp.sampleIndex)
+            .replace('./samples', `${server}/samples`)
+          // name: `${sp.sampleGroupName}-${sp.sampleIndex}`,
+        };
+      })
+    ]
+  }
+
+  console.log(track);
+
+  const content = JSON.stringify(jdata); // 要写入文件的字符串内容
+  const blob = new Blob([content], { type: "application/json;charset=utf-8" }); // 创建 Blob 对象
+  const url = URL.createObjectURL(blob); // 使用 URL.createObjectURL() 方法创建对象 URL
+  const link = document.createElement("a"); // 创建 <a> 元素
+  link.href = url; // 设置 <a> 元素的 href 属性为对象 URL
+  link.download = `lofi${track.title.replace('#', '_')}.json`; // 设置下载文件的文件名
+  link.click(); // 触发下载
 }
 
 generateButton.addEventListener('click', generateNewTrack);
