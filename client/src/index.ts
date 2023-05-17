@@ -137,13 +137,25 @@ function downloadTrack(track: Track) {
     }],
     samples: [
       ...track.sampleLoops.map(sp => {
+        let filters: any[] = [];
+        if (sp.sampleGroupName.includes('drumloop')) {
+          filters = [{
+            name: "Filter",
+            filterType: 'lowpass',
+            frequency: 2400,
+            Q: 0.5
+          }];
+        }
+
+        const sg = Samples.SAMPLEGROUPS.get(sp.sampleGroupName);
         return { 
           name: `${sp.sampleGroupName}-${sp.sampleIndex}`,
           start: sp.startTime,
           stop: sp.stopTime,
-          url: Samples.SAMPLEGROUPS.get(sp.sampleGroupName)
-            .getSampleUrl(sp.sampleIndex)
-            .replace('./samples', `${server}/samples`)
+          filters,
+          volume: sg.volume,
+          url: sg.getSampleUrl(sp.sampleIndex)
+            .replace('./samples', `https://cos.mirav.cn/zhaojun/samples`)
           // name: `${sp.sampleGroupName}-${sp.sampleIndex}`,
         };
       })
@@ -159,6 +171,13 @@ function downloadTrack(track: Track) {
   link.href = url; // 设置 <a> 元素的 href 属性为对象 URL
   link.download = `lofi${track.title.replace('#', '_')}.json`; // 设置下载文件的文件名
   link.click(); // 触发下载
+
+  if (window.location.href.endsWith('#auto')) {
+    setTimeout(() => {
+      refreshLatentSpace();
+      generateNewTrack();
+    }, 2000)
+  }
 }
 
 generateButton.addEventListener('click', generateNewTrack);
